@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Tic-Tac-Toe Project</title>
+    <link href="https://fonts.googleapis.com/css?family=Lato|Roboto" rel="stylesheet" type='text/css'>
+  </head>
+  <body>
+
+
+</br>
+</br>
+<div class="container text-center">
+  <h1>Tic-Tac-Toe Project</h1>
+  <h5>Built with HTML, CSS, Bootstrap, Javascipt and jQuery</h5>
+  </br>
+  </br>
+  </br>
+<h4>Choose your symbol</h4>
+<a class ="btn btn-success" id="turnX">Player:   X</a>
+<a class ="btn btn-default" id="turnO">Computer:  O</a>
+
+  </br>
+  </br>
+  </br>
+
+<div class="row">
+  <div class="col-md-12">  <!--for some reason 12 is needed to center these-->
+    <a class="btn btn-primary btn-lg tic" id="0">+</a>
+    <a class="btn btn-primary btn-lg tic" id="1">+</a>
+    <a class="btn btn-primary btn-lg tic" id="2">+</a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <a class="btn btn-primary btn-lg tic" id="3">+</a>
+    <a class="btn btn-primary btn-lg tic" id="4">+</a>
+    <a class="btn btn-primary btn-lg tic" id="5">+</a>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-12">
+    <a class="btn btn-primary btn-lg tic" id="6">+</a>
+    <a class="btn btn-primary btn-lg tic" id="7">+</a>
+    <a class="btn btn-primary btn-lg tic" id="8">+</a>
+  </div>
+</div>
+</div>
+
+
+
+  </body>
+
+  <style>
+
+  body{
+    background-color: beige;
+  }
+  h4{
+    padding-bottom: 10px;
+  }
+  .tic{
+    font-size: 50px;
+    font-weight: bold;
+    margin-bottom: 4px;
+  }
+  #turnX{
+    font-size: 25px;
+  }
+  #turnO{
+    font-size: 25px;
+  }
+
+  </style>
+
+  <script>
+
+  //Inspiration from "Coding Tutorials 360" as well as "Mr Snow" on Youtube. A lot of modifications were made to clean up this code and make it more complete and visually engaging.
+
+  $(document).ready(function(){
+
+    //Default player's symbol to X
+    var playerSymbol = "X"
+
+    //Array to store values to check for winning result
+    var turns = ["+","+","+","+","+","+","+","+","+"];
+
+    //Computer's symbol is defaulted to "O"
+    var computerSymbol="O";
+
+    //Boolean variable to detect who's turn it is
+    var gameOn = false;
+
+    //count required to prevent infinite loop
+    var count = 0;
+
+    //Player chooses they symbol to be X
+    $("#turnX").click(function(){
+      playerSymbol = "X";
+      computerSymbol="O";
+
+      //to highlight the selected symbol
+      $("#turnO").removeClass("btn-success");
+      $("#turnX").addClass("btn-success");
+      $("#turnX").html("Player:  X");
+      $("#turnO").html("Computer:  O");
+      reset();
+    });
+
+    //Player chooses they symbol to be O
+    $("#turnO").click(function(){
+      playerSymbol = "O";
+      computerSymbol = "X";
+
+      //to highlight the selected symbol
+      $("#turnX").removeClass("btn-success");
+      $("#turnO").addClass("btn-success");
+      $("#turnO").html("Player:  O");
+      $("#turnX").html("Computer:  X");
+      reset();
+    });
+
+    function computerTakesTurn(){
+      //used to break while loop
+      var taken = false;
+      while(taken === false && count < 5){ //player will have had a maximum of 5 turns
+        //Generate the computer's random turn in available spaces
+        var computersMove = (Math.random()*10).toFixed(); //Math.random()*10) creates a random number between 1 and 10.  toFixed() makes it have no decimal places
+        var move = $("#"+computersMove).text();
+        if(move ==="+"){
+          //spot is blank so it passes and gets written
+          $("#"+computersMove).text(computerSymbol);
+          //YES these two are now in the right place!
+          $("#"+computersMove).removeClass("btn-primary");
+          $("#"+computersMove).addClass("btn-warning");
+          taken = true; //this will break the loop. But everytime this runs, it will reset to false to keep trying until it finds an empty spot
+          //add that value into the turns array
+          turns[computersMove] = computerSymbol;
+        }
+      }
+    }
+
+    function playerTurn(playerSymbol, id){
+
+      var spotTaken = $("#"+id).text();  //this might need to be adjusted to be + insetad of #. Apperently THIS one needs to be a "#".
+
+      //only make change if the spot is blank/not yet selected
+      if (spotTaken ==="+"){  //this might need to be adjusted to be + insetad of #. Apperently THIS one needs to be a "+".
+        //YES these two are now in the right place!
+        $("#"+id).removeClass("btn-primary");
+        $("#"+id).addClass("btn-success");
+        count++;
+        turns[id] = playerSymbol;
+        $("#"+id).text(playerSymbol); //Apperently THIS one needs to be a "#".
+        winCondition(turns, playerSymbol);
+        //if player lost?
+        if(gameOn === false){
+          computerTakesTurn(); //note this very sensitive naming!!!
+          winCondition(turns, computerSymbol);
+        }
+      }
+
+    }
+
+    //want to make modification to the alert messages here to determine if it was the player or the computer that won.
+    //Also removed thewin condition statement, as I would prefer for the winning row to be highlighted, perhaps with some animation.
+    function winCondition(turnArray, currentTurn){
+      if (turnArray[0] === currentTurn && turnArray[1]===currentTurn && turnArray[2] === currentTurn) {
+        gameOn = true; //trigger game over
+        reset();  //reset the game
+        alert("Player " + currentTurn + " wins!");// (Top row across 0,1, and 2 spots)"); //pop up alert to say who won what wht condition
+      }
+       else if (turnArray[2] === currentTurn && turnArray[4]===currentTurn && turnArray[6] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (Top row across 2,4, and 6 spots)");
+      }
+      else if (turnArray[0] === currentTurn && turnArray[3]===currentTurn && turnArray[6] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (1st row down 0,3, and 6 spots)");
+        }
+      else if (turnArray[0] === currentTurn && turnArray[4]===currentTurn && turnArray[8] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (1st row diagonally across 0,4, and 8 spots)");
+      }
+      else if (turnArray[1] === currentTurn && turnArray[4]===currentTurn && turnArray[7] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (2nd row down 1,4, and 7 spots)");
+      }
+      else if (turnArray[2] === currentTurn && turnArray[5]===currentTurn && turnArray[8] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (3rd row down 2,5, and 8 spots)");
+      } else if (turnArray[2] === currentTurn && turnArray[5]===currentTurn && turnArray[8] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (3rd row across 2,4, and 6 spots)");
+      } else if (turnArray[3] === currentTurn && turnArray[4]===currentTurn && turnArray[5] === currentTurn) {
+        gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (Middle row across 3,4, and 5 spots)");
+      }
+      else if(turnArray[6]===currentTurn && turnArray[7]===currentTurn && turnArray[8]===currentTurn){
+          gameOn = true;
+        reset();
+        alert("Player " + currentTurn + " wins!");// (Bottom row across 6,7, and 8 spots)");
+      }
+      //if there are no blank spaces left (no occurences of "+" in the turns array) game is ties and should be reset.
+      else if (turns.indexOf("+") == -1){
+      alert("GAME TIE!  Board will be reset");
+      reset();
+    }
+      else {
+        gameOn = false;
+      }
+    }
+
+
+    $(".tic").click(function(){
+
+      var slot = $(this).attr('id');
+      //$(this) is storing the value of that is clicked on, the attribute being their id's, so from 0-8
+
+      playerTurn(playerSymbol, slot);
+    });
+
+
+    function reset(){
+      turns=["+","+","+","+","+","+","+","+","+"];
+      count = 0;
+      $(".tic").text("+");
+      //this is to restore square colors
+      $(".tic").removeClass("btn-success");
+      $(".tic").removeClass("btn-warning");
+      $(".tic").addClass("btn-primary");
+      gameOn = false;
+    }
+
+  });
+
+  </script>
+</html>
